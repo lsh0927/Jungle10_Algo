@@ -1,31 +1,31 @@
 import sys,math
 input= sys.stdin.readline
 
-
 N= int(input())
-li=[]
+li = []
 for _ in range(N):
-    li.append(list(map(int, input().split())))
+    li.append(list(map(int,input().split())))
 
+min_val=1000000000
 visited= [False]* N
-ans= 1000000000
 
-def dfs(start, now , depth, sum):
-    global ans
+
+def bt(start,cur,cost,depth):
+    global min_val
     if depth==N-1:
-        if li[now][start] != 0:
-            sum+= li[now][start]
-            ans = min(ans,sum)
+        if li[cur][start] != 0:
+            cost+=li[cur][start]
+            min_val=min(cost,min_val)
         return
 
-    for i in range(0,N):
-        if(not visited[i] and li[now][i]>0):
+    for i in range(N):
+        if not visited[i] and li[cur][i]>0:
             visited[i]=True
-            dfs(start,i,depth+1,sum+li[now][i])
+            bt(start,i,cost+li[cur][i],depth+1)
             visited[i]=False
 
-for i in range(0,N):
+for i in range(N):
     visited[i]=True
-    dfs(i,i,0,0)
+    bt(i,i,0,0)
 
-print(ans)
+print(min_val)
