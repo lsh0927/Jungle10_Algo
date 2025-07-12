@@ -1,43 +1,48 @@
-import sys,math
-input= sys.stdin.readline
-sys.setrecursionlimit(100000)
+import sys
+from collections import deque
+input = sys.stdin.readline
 
-n = int(input())
+N = int(input())
 arr = []
-for i in range(n):
+
+for i in range(N):
     arr.append(list(map(int, input().split())))
 
-mh = max(max(row) for row in arr)
+max_height = max(map(max, arr))
+max_val = 1
 
-dx=[1,0,-1,0]
-dy=[0,1,0,-1]
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
 
-def dfs(x,y,h):
-    isVisited[x][y]=True
-
-    for i in range(0,4):
-        nx=x+dx[i]
-        ny=y+dy[i]
+def bfs(start_i, start_j, t):
+    q = deque()
+    q.append((start_i, start_j)) 
+    visited[start_i][start_j] = True
         
-        if(nx>=0 and ny>=0 and nx<=n-1 and ny<=n-1 and not isVisited[nx][ny]): 
-            if arr[nx][ny]>h:
-                dfs(nx,ny,h)
+    #와 진짜....
+    while q:
+        cx, cy = q.popleft() 
+        
+        for i in range(4):
+            nx = cx + dx[i]
+            ny = cy + dy[i]
+            
+            if (0 <= nx < N and 0 <= ny < N and 
+                not visited[nx][ny] and arr[nx][ny] > t):
+                visited[nx][ny] = True
+                q.append((nx, ny)) 
+    
 
-    return 1
-
-max_val = 0  # 초기화 추가
-
-for t in range(0,mh):
-    isVisited = [[False] * n for _ in range(n)]
-
-    cnt=0
-    #t 만큼의 장마가 내렸음
-    for i in range(0,n):
-        for j in range(0,n):
-            # 높이 t 이하 지역은 물에 잠김
-            if(not isVisited[i][j] and arr[i][j]>t):
-                cnt+=dfs(i,j,t)
-
-    max_val=max(max_val,cnt)
+for T in range(0, max_height):
+    visited = [[False] * N for _ in range(N)]
+    total_cnt = 0
+    
+    for i in range(N):
+        for j in range(N):
+            if not visited[i][j] and arr[i][j] > T:
+                bfs(i, j, T)
+                total_cnt+=1
+    
+    max_val = max(max_val, total_cnt)
 
 print(max_val)
