@@ -4,24 +4,30 @@ input = sys.stdin.readline
 N = int(input())
 li = list(map(int, input().split()))
 
-def binary_search(arr, target):
-    left, right = 0, len(arr) - 1
-    while left <= right:
-        mid = (left + right) // 2
-        if arr[mid] < target:
-            left = mid + 1
+
+def bin_s(arr, target):
+
+    left=0
+    right=len(arr)-1
+
+    while left<=right:
+        mid=(left+right)//2
+        if arr[mid]< target:
+            left= mid+1
         else:
-            right = mid - 1
+            right=mid-1
+
     return left
 
-tail = []
+res=[]
 
 for num in li:
-    pos = binary_search(tail, num)
-    
-    if pos == len(tail):
-        tail.append(num)
-    else:
-        tail[pos] = num
+    sIdx= bin_s(res, num)
 
-print(len(tail))
+    if sIdx== len(res):
+        res.append(num)
+    else:
+        res[sIdx]=num
+
+print(len(res))
+
