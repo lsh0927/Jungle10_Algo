@@ -1,136 +1,90 @@
-# import sys,math
-# input= sys.stdin.readline
-# sys.stdin.readline는 개행문자를 포함한채로 비교
-
-# N=int(input())
-# li=[]
-# for _ in range(N):
-#     li.append(list(map(int, input().split())))
-
-
-# r의 값을 기준으로 내림차순 정렬?
-# 원이 나타내는 영역은?
-# 원이 주어지면, x값으로만 겹치는지 아닌지 알 수 있나?
-# 맨 바깥쪽 영역이 있기때문에 1이 시작
-# 각 원마다, Lidx가 있고 Ridx가 있을 것
-# 탐색해나가면서 두 인덱스를 찾음
-
-# [[-9,11], [0,20], [7,5], [11,9]]
-# 만약에 x 기준으로 정렬이 된다면, 
-# 0번째 원의 Lidx= -9-11 = -20, Ridx= -9+11 = 2
-# 1번째 원의 Lidx= 0-20 = -20, Ridx= 0+20 =20
-# 2번째 원의 Lidx= 7-5 = 2, Ridx= 7+5 = 12
-# 3번째 원의 Lidx= 11-9 = 2, Ridx= 11+9 = 20
-
-# 그럼 Lidx, Ridx를 각각 따로 정렬?
-# 스택을 2개 써야하나
-
-import sys
-input = sys.stdin.readline
-
-n = int(input())
-
-values = []
-for _ in range(n):
-    c, r = list(map(int, input().split()))
-    values.append(["L", c-r])
-    values.append(["R", c+r])
-values.sort(key=lambda p: (-p[1], p[0]), reverse=True)
-
-stack = []
-count = 1
-
-for value in values:
-    if value[0] == "L":
-        stack.append(value)
-    else:
-        cum_width = 0
-
-        while stack:
-            prev = stack.pop()
-
-            if prev[0] == "L":
-                width = value[1] - prev[1]
-
-                # 너비가 같으면 +2
-                if width == cum_width:
-                    count += 2
-                else:
-                    count += 1
-
-                stack.append(["C", width]) 
-                break
-
-            # 내부원
-            elif prev[0] == "C":
-                cum_width += prev[1]
+class Circle:
+    def __init__(self, center, radius):
+        self.center = center
+        self.radius = radius
+        self.left = center - radius
+        self.right = center + radius
+        self.diameter = 2 * radius
+        self.children = []
     
-print(count)# import sys,math
-# input= sys.stdin.readline
-# sys.stdin.readline는 개행문자를 포함한채로 비교
-
-# N=int(input())
-# li=[]
-# for _ in range(N):
-#     li.append(list(map(int, input().split())))
-
-
-# r의 값을 기준으로 내림차순 정렬?
-# 원이 나타내는 영역은?
-# 원이 주어지면, x값으로만 겹치는지 아닌지 알 수 있나?
-# 맨 바깥쪽 영역이 있기때문에 1이 시작
-# 각 원마다, Lidx가 있고 Ridx가 있을 것
-# 탐색해나가면서 두 인덱스를 찾음
-
-# [[-9,11], [0,20], [7,5], [11,9]]
-# 만약에 x 기준으로 정렬이 된다면, 
-# 0번째 원의 Lidx= -9-11 = -20, Ridx= -9+11 = 2
-# 1번째 원의 Lidx= 0-20 = -20, Ridx= 0+20 =20
-# 2번째 원의 Lidx= 7-5 = 2, Ridx= 7+5 = 12
-# 3번째 원의 Lidx= 11-9 = 2, Ridx= 11+9 = 20
-
-# 그럼 Lidx, Ridx를 각각 따로 정렬?
-# 스택을 2개 써야하나
-
-import sys
-input = sys.stdin.readline
-
-n = int(input())
-
-values = []
-for _ in range(n):
-    c, r = list(map(int, input().split()))
-    values.append(["L", c-r])
-    values.append(["R", c+r])
-values.sort(key=lambda p: (-p[1], p[0]), reverse=True)
-
-stack = []
-count = 1
-
-for value in values:
-    if value[0] == "L":
-        stack.append(value)
-    else:
-        cum_width = 0
-
-        while stack:
-            prev = stack.pop()
-
-            if prev[0] == "L":
-                # 두 점간 거리: 0이면 접함
-                diff = value[1] - prev[1]
-
-                # 너비가 같으면 +2
-                if diff == cum_width:
-                    count += 2
-                else:
-                    count += 1
-
-                stack.append(["C", diff]) 
-                break
-
-            # 내부원
-            elif prev[0] == "C":
-                cum_width += prev[1]
+    def contains(self, other):
+        # 완전히 내부에 포함 (접촉도 포함으로 간주)
+        return (self.left <= other.left and other.right <= self.right and 
+                self != other)
     
-print(count)
+    def add_child(self, child):
+        self.children.append(child)
+    
+    def get_children_diameter_sum(self):
+        return sum(child.diameter for child in self.children)
+    
+    def calculate_regions(self):
+        # 기본: 이 원 자체가 1개 영역
+        regions = 1
+        
+        # 자식들의 영역을 재귀적으로 계산
+        for child in self.children:
+            regions += child.calculate_regions()
+        
+        # 자식들과 완전 접촉하면 추가 영역 +1
+        if self.children and self.get_children_diameter_sum() == self.diameter:
+            regions += 1
+        
+        return regions
+
+
+def build_circle_tree(circles):
+    # 반지름 큰 순으로 정렬
+    circles.sort(key=lambda c: c.radius, reverse=True)
+    roots = []
+    
+    for circle in circles:
+        parent_found = False
+        
+        # 이 원을 포함할 수 있는 가장 작은 원 찾기
+        for potential_parent in circles:
+            if potential_parent.contains(circle):
+                # 직접적인 부모인지 확인 (중간에 다른 원이 없는지)
+                is_direct_parent = True
+                for other in circles:
+                    if (other != potential_parent and other != circle and
+                        potential_parent.contains(other) and other.contains(circle)):
+                        is_direct_parent = False
+                        break
+                
+                if is_direct_parent:
+                    potential_parent.add_child(circle)
+                    parent_found = True
+                    break
+        
+        if not parent_found:
+            roots.append(circle)
+    
+    return roots
+
+
+def solve():
+    n = int(input())
+    circles_data = []
+    for _ in range(n):
+        c, r = map(int, input().split())
+        circles_data.append((c, r))
+    
+    if n == 0:
+        return 1
+    
+    # Circle 객체 생성
+    circles = [Circle(center, radius) for center, radius in circles_data]
+    
+    # 트리 구조 구축
+    root_circles = build_circle_tree(circles)
+    
+    # 각 루트 트리의 영역 수 계산
+    total_regions = 1  # 전체 평면의 기본 영역
+    
+    for root in root_circles:
+        total_regions += root.calculate_regions()
+    
+    return total_regions
+
+print(solve())
