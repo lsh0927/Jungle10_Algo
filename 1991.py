@@ -8,24 +8,25 @@ class TreeNode:
         self.val=val
         self.left=None
         self.right=None
-
+ 
 nodes={}
 
-def cal_node(char):
-    if char=='.':
+
+def make_Tree(val):
+    if val=='.':
         return None
     
-    if char not in nodes:
-        nodes[char]= TreeNode(char)
-    return nodes[char]
+    
+    if val not in nodes:
+        nodes[val]= TreeNode(val)
+    return nodes[val]
 
 
 for _ in range(N):
-    p,l,r= input().split()
-
-    p_node= cal_node(p)
-    p_node.left= cal_node(l)
-    p_node.right= cal_node(r)
+    root, left, right= input().split()
+    node= make_Tree(root)
+    node.left=make_Tree(left)
+    node.right=make_Tree(right)
 
 
 def preorder(node):
@@ -51,6 +52,7 @@ def inorder(node):
     inorder(node.left)
     print(node.val, end='')
     inorder(node.right)
+
 
 preorder(nodes['A'])
 print()
