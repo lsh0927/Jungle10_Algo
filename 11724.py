@@ -70,17 +70,17 @@ N, M = map(int, input().split())
 
 visited= [False] * (N+1)
 graph= [[] for _ in range(N+1)]
-q=deque()
 
 def bfs(node):
-    q.append(node)
-
+    q = deque([node])
+    visited[node] = True 
+    
     while q:
-        cur_node= q.popleft()
-        visited[cur_node]=True
-
+        cur_node = q.popleft()
+        
         for next_node in graph[cur_node]:
             if not visited[next_node]:
+                visited[next_node] = True  
                 q.append(next_node)
 
 for _ in range(M):
