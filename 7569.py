@@ -6,7 +6,7 @@ import heapq as hq
 
 m, n, h = map(int, input().split())
 
-matrix = [[list(map(int, sys.stdin.readline().split())) for _ in range(n)] for _ in range(h)]
+matrix = [[list(map(int, input().split())) for _ in range(n)] for _ in range(h)]
 visited = [[[False]*m for _ in range(n)] for _ in range(h)]
 
 queue = deque()
