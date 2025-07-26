@@ -1,0 +1,7 @@
+import sys,math
+input= sys.stdin.readline
+from collections import deque
+import heapq as hq
+
+
+n,k= map(int,input())
