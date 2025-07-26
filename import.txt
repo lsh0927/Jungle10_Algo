@@ -1,3 +1,4 @@
 import sys,math
 input= sys.stdin.readline
-# sys.stdin.readline는 개행문자를 포함한채로 비교
+from collections import deque
+import heapq as hq

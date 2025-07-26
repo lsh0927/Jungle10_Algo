@@ -11,6 +11,8 @@ degree= [0] * (n+1)
 
 seq= [[] for _ in range(n+1)]
 needs= [ [0] * (n+1) for _ in range(n+1)]
+# needs[i][j] = i번 제품을 만들 때 필요한 j번 기본부품의 개수
+
 
 for _ in range(m):
     a,b,c= map(int, input().split())
@@ -35,7 +37,6 @@ while q:
         else:
             for i in range(1,n+1):
                 needs[next][i]+=needs[cur][i] * next_need
-
         # 차수 -1
         degree[next] -= 1
         if degree[next]==0:
@@ -46,4 +47,3 @@ for x in enumerate(needs[n]):
     if x[1]>0:
         print(*x)
 
-print(needs)
