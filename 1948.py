@@ -1,59 +1,103 @@
-import sys
-from collections import defaultdict
+# 다익스트라
+# import sys
+# from collections import deque
+# input = sys.stdin.readline
 
+# n = int(input())
+# m = int(input())
+# edges = [[] for _ in range(n+1)]
+# edges_rev = [[] for _ in range(n+1)]
+# for _ in range(m):
+#     s, e, t = map(int, input().split())
+#     edges[s].append([e, t])
+#     edges_rev[e].append([s, t])
+
+# s, d = map(int, input().split())
+
+
+# def dijkstra():
+#     distance = [0 for _ in range(n+1)]
+#     q = deque([[0, s]])
+#     while q:
+#         dist, cur = q.popleft()
+#         if distance[cur] > dist:
+#             continue
+#         for v, w in edges[cur]:
+#             if dist + w > distance[v]:
+#                 distance[v] = dist + w
+#                 q.append([distance[v], v])
+#     return distance
+
+
+# def bfs():
+#     cnt = 0
+#     visited = [0 for _ in range(n+1)]
+#     q = deque([e])
+#     visited[e] = 1
+#     while q:
+#         cur = q.popleft()
+#         for pre_v, pre_c in edges_rev[cur]:
+#             if distance[pre_v] + pre_c == distance[cur]:
+#                 cnt += 1
+#                 if not visited[pre_v]:
+#                     q.append(pre_v)
+#                     visited[pre_v] = 1
+#     return cnt
+
+
+# distance = dijkstra()
+# print(distance[d])
+# print(bfs())
+
+
+# 위상정렬 + 역방향 BFS
+import sys
+from collections import deque
 input = sys.stdin.readline
 
 n = int(input())
 m = int(input())
 
-graph = defaultdict(list)
+inDegree = [0 for _ in range(n+1)]
+edges = [[] for _ in range(n+1)]
+edges_rev = [[] for _ in range(n+1)]
 
 for _ in range(m):
-    start, end, time = map(int, input().split())
-    graph[start].append((end, time))
+    s,e,t = map(int, input().split())
+    edges[s].append([e, t])
+    edges_rev[e].append([s, t])
+    inDegree[e] += 1
 
-start_city, end_city = map(int, input().split())
+s, d = map(int, input().split())
 
-# DP 메모이제이션용
-dp = [-1] * (n + 1)  # 각 정점에서 도착지까지의 최장 거리
+q = deque()
+for i in range(1, n+1):
+    if inDegree[i] == 0:
+        q.append(i)
 
-def dfs(node):
-    # 도착지에 도달했으면 0 반환
-    if node == end_city:
-        return 0
-    
-    # 이미 계산된 값이 있으면 반환
-    if dp[node] != -1:
-        return dp[node]
-    
-    dp[node] = 0
-    # 현재 노드에서 갈 수 있는 모든 다음 노드 확인
-    for next_node, weight in graph[node]:
-        dp[node] = max(dp[node], dfs(next_node) + weight)
-    
-    return dp[node]
+dist = [0 for _ in range(n+1)]
 
-# 시작점에서 도착점까지의 최장 거리
-max_time = dfs(start_city)
+while q:
+    cur = q.popleft()
+    for v, w in edges[cur]:
+        if dist[cur] + w > dist[v]:
+            dist[v] = dist[cur] + w
+        inDegree[v] -= 1
+        if inDegree[v] == 0:
+            q.append(v)
 
-# 임계 경로의 간선 개수 계산 (모든 임계 간선의 총합)
-critical_edges = 0
-visited_edges = set()  # 중복 간선 방지
+cnt = 0
+visited = [0 for _ in range(n+1)]
+q = deque([d])
 
-def count_critical(node):
-    global critical_edges
-    
-    for next_node, weight in graph[node]:
-        # 임계 경로상의 간선인지 확인
-        if dp[node] == dp[next_node] + weight:
-            # 간선 중복 체크 (node, next_node, weight)
-            edge = (node, next_node, weight)
-            if edge not in visited_edges:
-                visited_edges.add(edge)
-                critical_edges += 1
-            count_critical(next_node)
+while q:
+    cur = q.popleft()
+    for v, w in edges_rev[cur]:
+        if dist[v] + w == dist[cur]:
+            cnt += 1
+            if not visited[v]:
+                visited[v] = 1
+                q.append(v)
 
-count_critical(start_city)
-
-print(max_time)
-print(critical_edges)
+print(dist[d])
+print(cnt)
