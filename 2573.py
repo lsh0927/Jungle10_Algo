@@ -1,66 +1,59 @@
 import sys
+from collections import deque
 input = sys.stdin.readline
-sys.setrecursionlimit(10**6)
 
 N, M = map(int, input().split())
-arr = []
-for i in range(N):
-    arr.append(list(map(int, input().split())))
-
+matrix = [list(map(int, input().split())) for _ in range(N)]
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 
-def dfs(x, y, visited):
-    visited[x][y] = True
+def count_groups():
+    visited = [[False] * M for _ in range(N)]
+    cnt = 0
     
-    for i in range(4):
-        nx = x + dx[i]
-        ny = y + dy[i]
-        
-        if 0 <= nx < N and 0 <= ny < M:
-            if not visited[nx][ny] and arr[nx][ny] > 0:
-                dfs(nx, ny, visited)
+    def bfs(r, c):
+        queue = deque([(r, c)])
+        visited[r][c] = True
+        while queue:
+            x, y = queue.popleft()
+            for i in range(4):
+                nx, ny = x + dx[i], y + dy[i]
+                if 0 <= nx < N and 0 <= ny < M and not visited[nx][ny] and matrix[nx][ny] > 0:
+                    visited[nx][ny] = True
+                    queue.append((nx, ny))
+    
+    for i in range(N):
+        for j in range(M):
+            if matrix[i][j] > 0 and not visited[i][j]:
+                bfs(i, j)
+                cnt += 1
+    return cnt
 
 def melt():
-    tmp = [[0] * M for _ in range(N)]
-    
+    melt_info = []
     for i in range(N):
         for j in range(M):
-            if arr[i][j] > 0:
-                cnt = 0
+            if matrix[i][j] > 0:
+                sea_count = 0
                 for k in range(4):
-                    ni = i + dx[k]
-                    nj = j + dy[k]
-                    #if 0 <= ni < N and 0 <= nj < M and arr[ni][nj] == 0:
-                    if arr[ni][nj] == 0:
-                        cnt += 1
-                tmp[i][j] = max(0, arr[i][j] - cnt)
+                    ni, nj = i + dx[k], j + dy[k]
+                    if 0 <= ni < N and 0 <= nj < M and matrix[ni][nj] == 0:
+                        sea_count += 1
+                if sea_count > 0:
+                    melt_info.append((i, j, sea_count))
     
-    return tmp
+    for i, j, amount in melt_info:
+        matrix[i][j] = max(0, matrix[i][j] - amount)
 
 time = 0
-
 while True:
-    # 빙산 덩어리 개수 세기
-    visited = [[False] * M for _ in range(N)]
-    ice_groups = 0
-    
-    for i in range(N):
-        for j in range(M):
-            if arr[i][j] > 0 and not visited[i][j]:
-                dfs(i, j, visited)
-                ice_groups += 1
-    
-    # 빙산이 없으면 0 출력
-    if ice_groups == 0:
+    groups = count_groups()
+    if groups >= 2:
+        print(time)
+        break
+    elif groups == 0:
         print(0)
         break
     
-    # 두 덩어리 이상이면 시간 출력
-    if ice_groups >= 2:
-        print(time)
-        break
-    
-    # 빙산 녹이기
-    arr = melt()
+    melt()
     time += 1

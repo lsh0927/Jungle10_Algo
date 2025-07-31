@@ -8,59 +8,43 @@ grid = [list(input().rstrip()) for _ in range(R)]
 dy = [-1, 1, 0, 0]
 dx = [0, 0, -1, 1]
 
-water_q = deque()
-animal_q = deque()
-
+queue = deque()
 visited = [[False] * C for _ in range(R)]
 
-
+# 같은 시간이라면 물을 먼저 처리하기 위해 물을 먼저 큐에 추가
 for y in range(R):
     for x in range(C):
         if grid[y][x] == '*':
-            water_q.append((y, x))
-        elif grid[y][x] == 'S':
-            animal_q.append((y, x, 0))
+            queue.append((0, 'water', y, x))  # (시간, 타입, y, x)
+
+for y in range(R):
+    for x in range(C):
+        if grid[y][x] == 'S':
+            queue.append((0, 'animal', y, x))
             visited[y][x] = True
 
-def spread_water():
-    for _ in range(len(water_q)):
-        y, x = water_q.popleft()
-        
+while queue:
+    time, entity_type, y, x = queue.popleft()
+    
+    if entity_type == 'water':
         for i in range(4):
             ny, nx = y + dy[i], x + dx[i]
             
-            if ny < 0 or ny >= R or nx < 0 or nx >= C:
-                continue
-            
-            if grid[ny][nx] == '.':
+            if 0 <= ny < R and 0 <= nx < C and grid[ny][nx] == '.':
                 grid[ny][nx] = '*'
-                water_q.append((ny, nx))
-
-def move_animal_q():
-    for _ in range(len(animal_q)):
-        y, x, time = animal_q.popleft()
-        
+                queue.append((time + 1, 'water', ny, nx))
+    
+    else: 
         for i in range(4):
             ny, nx = y + dy[i], x + dx[i]
             
-            if ny < 0 or ny >= R or nx < 0 or nx >= C:
-                continue
-            
-            if grid[ny][nx] == 'D':
-                return time + 1
-            
-            if grid[ny][nx] == '.' and not visited[ny][nx]:
-                visited[ny][nx] = True
-                animal_q.append((ny, nx, time + 1))
-    
-    return -1
-
-while animal_q:
-    spread_water()
-    
-    result = move_animal_q()
-    if result !=-1:
-        print(result)
-        exit()
+            if 0 <= ny < R and 0 <= nx < C:
+                if grid[ny][nx] == 'D':
+                    print(time + 1)
+                    exit()
+                
+                if grid[ny][nx] == '.' and not visited[ny][nx]:
+                    visited[ny][nx] = True
+                    queue.append((time + 1, 'animal', ny, nx))
 
 print("KAKTUS")

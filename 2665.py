@@ -1,38 +1,39 @@
 import sys
-from collections import deque
+import heapq
+
 input = sys.stdin.readline
 
-N = int(input())
-dx = [0, 1, 0, -1]
-dy = [1, 0, -1, 0]
+n = int(input())
+maze = []
+for _ in range(n):
+    maze.append(input().strip())
 
-arr = []
-for i in range(N):
-    arr.append(input().strip())
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
 
-def bfs():
-    dist= [ [float('inf')] * N for _ in range(N)]
-    dist[0][0]=0
-    q=deque()
-    q.append((0,0))
+dist = [[float('inf')] * n for _ in range(n)]
 
-    while q:
-        cx,cy = q.popleft()
+pq = [(0, 0, 0)]
+dist[0][0] = 0
 
-        for i in range(4):
-            nx,ny= cx+dx[i], cy+dy[i]
+while pq:
+    cost, x, y = heapq.heappop(pq)
+    
+    # 이미 처리된 노드라면 스킵
+    if cost > dist[x][y]:
+        continue
+    
+    for i in range(4):
+        nx, ny = x + dx[i], y + dy[i]
+        
+        # 범위 체크
+        if 0 <= nx < n and 0 <= ny < n:
+            # 새로운 비용 계산 (흰 방: 0, 검은 방: 1)
+            new_cost = cost + (0 if maze[nx][ny] == '1' else 1)
+            
+            # 더 적은 비용으로 갈 수 있다면 갱신
+            if new_cost < dist[nx][ny]:
+                dist[nx][ny] = new_cost
+                heapq.heappush(pq, (new_cost, nx, ny))
 
-            if 0 <= nx < N and 0 <= ny < N:
-                cost= 0 if arr[nx][ny]=='1' else 1
-
-                if dist[nx][ny] > dist[cx][cy]+cost:
-                    dist[nx][ny] = dist[cx][cy]+cost
-
-                    if cost==0:
-                        q.appendleft((nx,ny))
-                    else:
-                        q.append((nx,ny))
-
-    return dist[N-1][N-1]
-
-print(bfs())
+print(dist[n-1][n-1])
