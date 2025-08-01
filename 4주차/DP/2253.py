@@ -9,6 +9,7 @@ small=set()
 for _ in range(M):
     small.add(int(input()))
 
+# dp[i][j]=i라는 점에 j의 속도로 도달했을 때의 최소 점프 횟수
 dp= [ [float('inf')] * (int((2*N) ** 0.5) +2) for _ in range(N+1)]
 dp[1][0]=0
 
