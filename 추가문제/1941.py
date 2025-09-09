@@ -9,71 +9,67 @@ for _ in range(5):
 
 ans=0
 
-dx= [0,1,0,-1]
-dy= [1,0,-1,0]
-
-def check(selected):
-    cnt=0
-    for i in range(7):
-        cx,cy=selected[i]
-        if li[cx][cy]=='S':
-            cnt+=1
-    if cnt>=4:
-        return True
-    return False
+# 5*5로 구성이 완료됨
+selected= [0] * 7
 
 def isconnected(selected):
-    # visited= [False]*25
-    # sx,sy=selected[0]    
-    # q= deque((sx,sy))
-    # idx=1
 
-    q=deque()
+    # 동서남북 중 다른 하나와 이어져있다면? ㄴㄴ
+    # 전부 인접해있으려면? 
+
+    visit= [False] * 7
+    q= deque()
     q.append(0)
-    visited=[False]* 7
-    visited[0]=True
+    visit[0]=True
 
-    
     cnt=1
 
+    # 연쇄적으로 인접해있다의 의미
+
     while q:
-        cur= q.popleft()
-        cx,cy=selected[cur]
-        # visited[cx][cy]=True
+        cur=q.popleft()
+        cx,cy= selected[cur]
+
+        # for i in range(1,7):
+        #     if not visit[i]:
+        #         tx,ty=selected[i]
+        #         if abs(tx-cx)+abs(ty-cy)==1:
+        #             visit[i]=True
+        #             q.append(i)
+        #             cnt+=1
         
-        # for i in range(4):
-        #     nx=cx+dx[i]
-        #     ny=cy+dy[i]
-
-        #     if 0<=nx<5 and 0<=ny<5 and not visited[nx][ny] and selected[idx]:
-        #         cnt+=1
-        #         visited[nx][ny]=True
-        #         q.append((nx,ny))
-
         for i in range(1,7):
-            if not visited[i]:
+            if not visit[i]:
                 tx,ty=selected[i]
-                if abs(cx-tx) +abs(cy-ty)==1:
-                    visited[i]=True
+                if abs(tx-cx) + abs(ty-cy) ==1:
+                    visit[i]=True
                     q.append(i)
                     cnt+=1
 
-    return (cnt==7)
+    return cnt==7
 
 
-def dfs(idx, depth, selected, str):
+def check(selected):
+    cnt=0
+
+    for r,c in selected:
+        if(li[r][c]=='S'):
+            cnt+=1
+
+    return cnt>=4
+
+
+def bt(idx,depth,selected):
     global ans
     if depth==7:
-        if isconnected(selected):
-            if check(selected):
-                ans+=1
+        if(isconnected(selected) and check(selected)):
+            ans+=1
         return
-
+    
     for i in range(idx,25):
-        r,c= divmod(i,5)
-        selected[depth]=(r,c)
-        dfs(i+1,depth+1,selected, str+li[r][c])
+        r,c=divmod(i,5)
+        selected[depth]= (r,c)
+        bt(i+1,depth+1,selected)
 
-selected=[0]*7
-dfs(0,0,selected,"")
+bt(0,0,selected)
 print(ans)

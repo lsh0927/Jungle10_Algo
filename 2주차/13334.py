@@ -1,29 +1,30 @@
-import sys,math
-input= sys.stdin.readline
+import sys
+input = sys.stdin.readline
 import heapq as hq
 
-N = int(input())
-li= []
+n= int(input())
 
-for _ in range(N):
-    a,b= map(int, input().split())
+li=[]
+
+for _ in range(n):
+    a,b=map(int, input().split())
     if a>b:
         li.append((b,a))
     else:
         li.append((a,b))
-    
+
+li.sort(key=lambda x: x[1])
+
 L= int(input())
-li.sort(key=lambda x : (x[1],x[0]))
 
+res =[]
 
-min_heap=[]
-max_cnt=0
-for lo in li:
-    start,end=lo
-    hq.heappush(min_heap,start)
-    t_start= end - L
-    while min_heap and min_heap[0] < t_start:
-        hq.heappop(min_heap)
-    max_cnt=max(max_cnt, len(min_heap))    
+max_val=0
+for i in range(n):
+    t_start= li[i][1]-L
+    hq.heappush(res,li[i][0])
+    while res and res[0] < t_start:
+        hq.heappop(res)
+    max_val=max(max_val,len(res))
 
-print(max_cnt)
+print(max_val)

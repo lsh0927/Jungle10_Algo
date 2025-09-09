@@ -15,54 +15,68 @@ l= int(input())
 change={}
 
 for _ in range(l):
-    line= input().split()
-    x= int(line[0])
-    c=line[1]
-    change[x]=c
+    t,dir= map(str, input().split())
+    change[int(t)]=dir
 
-dx=[0, 1, 0, -1] 
-dy=[1, 0, -1, 0]
-
-q=deque([(0,0)])
-
-cx,cy=0,0
-time=0
-dir=0
 
 def isEnd(x,y):
+    # 벽이나 자기 자신의 몸과 부딪히면 게임 끝
     if x<0 or x>=n or y<0 or y>=n:
         return True
-    
     if (x,y) in q:
         return True
-    
     return False
 
+time=0
+dir=0
+# 우측부터 시계방향
+dx=[0,1,0,-1]
+dy=[1,0,-1,0]
 
-while True:
+q=deque()
+q.append((0,0))
+
+while(True):
     time+=1
+    #cx,cy=q.popleft()
+    cx,cy = q[0]
 
-    nx=cx+dx[dir]
-    ny=cy+dy[dir]
+
+
+    nx=cx
+    ny=cy
+
+    if dir==0:
+        ny+=1
+    elif dir==1:
+        nx+=1
+    elif dir==2:
+        ny-=1
+    else : 
+        nx-=1
 
     if isEnd(nx,ny):
         break
 
-    if li[nx][ny]==1:
-        li[nx][ny]=0
-        q.append((nx,ny))
-
-    else:
-        q.append((nx,ny))
-        q.popleft()
-
     if time in change:
-        if change[time] == "D":
-            dir = (dir + 1) % 4
-        else: 
-            dir = (dir - 1) % 4
-    
-    cx=nx
-    cy=ny
+        if change[time]=='D':
+            dir= (dir+1)%4
+        else:
+            dir= (dir-1)%4
+            if dir==-1:
+                dir=3
 
+
+    # if li[nx][ny]==1:
+    #     # 사과가 있으면 꼬리가 줄어들지 않음
+    #     q.appendleft((nx,ny))
+    #     li[nx][ny]=0
+    # else:
+    #     q.appendleft((nx,ny))
+
+    q.appendleft((nx,ny))
+    if li[nx][ny]!=1:
+        q.pop()
+    else:
+        li[nx][ny]=0
 print(time)
