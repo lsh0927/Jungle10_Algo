@@ -25,7 +25,7 @@ def isconnected(selected):
     cnt=1
 
     # 연쇄적으로 인접해있다의 의미
-
+    
     while q:
         cur=q.popleft()
         cx,cy= selected[cur]
