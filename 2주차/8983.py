@@ -89,4 +89,4 @@ for i,j in bird_arr:
         else:
             cnt+=1
             break
-print(cnt)
+print
