@@ -1,50 +1,43 @@
-import sys,math
+import sys
 input= sys.stdin.readline
-# sys.stdin.readline는 개행문자를 포함한채로 비교
-from collections import deque
+#from collections import deque
 import heapq as hq
 
-class Node:
-    def __init__(self,to,cost):
-        self.to=to
-        self.cost=cost
-        
- 
-N= int(input())
-M= int(input())
-graph= [ [] for _ in range(N+1)]
-visited= [False] * (N+1)
+MAX= 9999999999 
+
+N=int(input())
+M=int(input())
+
+graph= [[] for _ in range(N+1)]
 
 for _ in range(M):
-    start,end,cost= map(int,input().split())
-    graph[start].append(Node(end,cost))
+    a,b,c= map(int,input().split())
+    graph[a].append((b,c))
 
-A,B= map(int,input().split())
-dist= [float('inf') for _ in range(N+1)]
-dist[A]=0
+dist=[MAX] * (N+1)
 
-pq=[(0,A)]
+start,end= map(int,input().split())
+dist[start]=0
 
+q=[]
+# 큐에 처음으로 넣을 값?
+hq.heappush(q,(0,start))
 
 def dijk():
 
-    while pq:
-        cur_cost, cur_node= hq.heappop(pq)
-    
-        if cur_cost> dist[cur_node]:
+    while q:
+        curCost, curNode=hq.heappop(q)
+
+        if curCost> dist[curNode]:
             continue
+        
+        for nextNode, nextCost in graph[curNode]:
+            newCost= dist[curNode]+ nextCost
 
-        if cur_node==B:
-            return cur_cost
+            if newCost < dist[nextNode]:
+                dist[nextNode]=newCost
+                hq.heappush(q,(newCost,nextNode))    
 
-        for next in graph[cur_node]:
-            next_node= next.to
-            next_cost= next.cost+cur_cost
 
-            if next_cost< dist[next_node]:
-                dist[next_node]=next_cost
-                hq.heappush(pq,(next_cost,next_node))
-
-print(dijk())
-
-    
+dijk()
+print(dist[end])

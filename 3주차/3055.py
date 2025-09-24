@@ -201,7 +201,7 @@ while q:
                     visit[nx][ny] = True
                     if li[nx][ny] == '.':  # 빈 공간일 때만 S로 변경
                         li[nx][ny] = 'S'
-                    # D일 때는 격자를 수정하지 않음!
+                    # D일 때는 격자를 수정하지 않음
                     q.append((nx, ny, ctime + 1))
 
 print("KAKTUS")
