@@ -8,25 +8,44 @@ coins = []
 for _ in range(n):
    coins.append(int(input()))
 
-coins = list(set(coins))
-coins.sort()
+coins= list(set(coins))
 
-queue = deque([(0, 0)]) 
-visited = [False] * (k + 1)
-visited[0] = True
+# #BFS
+# visited = [False] * (k + 1)
+# visited[0] = True
+# q=deque()
 
-while queue:
-   current_amount, coin_count = queue.popleft()
+# for coin in coins:
+#    q.append((coin,1))
+
+# while q:
+#    cur, cnt= q.popleft()
    
-   if current_amount == k:
-       print(coin_count)
-       exit()
-   
-   for coin in coins:
-       next_amount = current_amount + coin
-       
-       if next_amount <= k and not visited[next_amount]:
-           visited[next_amount] = True
-           queue.append((next_amount, coin_count + 1))
+#    if cur>k:
+#       continue
 
-print(-1)
+#    if cur==k:
+#       print(cnt)
+#       exit()
+   
+#    for coin in coins:
+#       if(cur+coin <=k and not visited[cur+coin]):
+#         visited[cur+coin]=True
+#         q.append((cur+coin,cnt+1))
+
+# print(-1)
+
+#dp
+
+dp=[float('inf')] * (k+1)
+dp[0]=0
+for coin in coins:
+    for i in range(coin,k+1):
+        # if dp[i-coin] != float('inf'):
+            dp[i]=min(dp[i], dp[i-coin]+1)
+
+if dp[k]== float('inf'):
+    print(-1)
+else:
+    print(dp[k])        
+
