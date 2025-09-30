@@ -6,52 +6,48 @@ import heapq as hq
 
 m, n, h = map(int, input().split())
 
-matrix = [[list(map(int, input().split())) for _ in range(n)] for _ in range(h)]
+matrix = [[list(map(int,input().split())) for _ in range(n)] for _ in range(h)]
 visited = [[[False]*m for _ in range(n)] for _ in range(h)]
 
-queue = deque()
-
-dx = [-1,1,0,0,0,0]
-dy = [0,0,-1,1,0,0]
-dz = [0,0,0,0,-1,1]
-
-answer = 0
-
-def bfs():
-    while queue:
-        x,y,z = queue.popleft()
-
-        for i in range(6):
-            nx = x + dx[i]
-            ny = y + dy[i]
-            nz = z + dz[i]
-
-            if nx < 0 or nx >= h or ny < 0 or ny >= n or nz < 0 or nz >= m:
-                continue
-
-            if matrix[nx][ny][nz] == 0 and not visited[nx][ny][nz]:
-                queue.append((nx,ny,nz))
-                matrix[nx][ny][nz] = matrix[x][y][z] + 1
-                visited[nx][ny][nz] = True
+dx=[1,-1,0,0,0,0]
+dy=[0,0,1,-1,0,0]
+dz=[0,0,0,0,1,-1]
 
 
+q=deque()
 
-for a in range(h):
-    for b in range(n):
-        for c in range(m):
-            if matrix[a][b][c] == 1 and visited[a][b][c] == 0:
-                queue.append((a,b,c))
-                visited[a][b][c] = True
-bfs()
+tmp=0
+for k in range(h):
+    for i in range(n):
+        for j in range(m):
+            if matrix[k][i][j]==1:
+                tmp+=1
+                q.append((k,i,j,0))
+                visited[k][i][j]=True
 
+if tmp==0:
+    print(-1)
+    exit()
 
-#한개라도 1
-for a in matrix:
-    for b in a:
-        for c in b:
-            if c == 0:
+time=0
+while q:
+    cz,cx,cy,time= q.popleft()
+
+    for i in range(6):
+        nx=dx[i]+cx
+        ny=dy[i]+cy
+        nz=dz[i]+cz
+
+        if 0<=nx<n and 0<=ny<m and 0<=nz<h and not visited[nz][nx][ny] and matrix[nz][nx][ny] == 0:
+            matrix[nz][nx][ny]=1
+            visited[nz][nx][ny]=True
+            q.append((nz,nx,ny,time+1))
+
+for k in range(h):
+    for i in range(n):
+        for j in range(m):
+            if matrix[k][i][j]==0:
                 print(-1)
-                exit(0)            
-        answer = max(answer, max(b))
+                exit()
 
-print(answer-1)
+print(time)
