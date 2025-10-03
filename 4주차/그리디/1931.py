@@ -5,29 +5,24 @@ N=int(input())
 meeting=[]
 
 for _ in range(N):
-    a,b=map(int,input().split())
-    meeting.append((a,b))
+    meeting.append(list(map(int,input().split())))
 
+meeting.sort(key= lambda x: (x[1],x[0]))
 
-meeting.sort(key=lambda x: (x[1],x[0]))
-#print(meeting)
-
-curEnd=meeting[0][1]
-curStart=meeting[0][0]
 cnt=1
+tmpS=meeting[0][0]
+tmpE=meeting[0][1]
 
 for i in range(1,N):
-    nextStart=meeting[i][0]
-    nextEnd=meeting[i][1]
 
-    if nextStart==nextEnd:
+    if tmpE<=meeting[i][0]:
+        # 새로운 회의 진행
+        tmpE=meeting[i][1]
         cnt+=1
-
-    elif nextStart>=curEnd:
-        curEnd=nextEnd
-        cnt+=1
-
-    else:        
+    else:
         continue
 
 print(cnt)
+    
+
+
