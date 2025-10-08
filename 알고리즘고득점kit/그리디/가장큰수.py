@@ -9,9 +9,10 @@ def solution(number, k):
             removed += 1
         stack.append(num)
     
-    # 만약 k개를 다 못 제거했다면? (예: "54321", k=2)
-    # 뒤에서 제거
+    # 만약 k개에 못 미친다면 뒤에서 제거
     for i in range(k-removed):
         stack.pop()
     
     return ''.join(stack)
+
+
